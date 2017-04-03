@@ -2,38 +2,12 @@
   #FLEX-GRID - START
 \*------------------------------------------------------------------------------*/
 
-////
-/// Responsive Flex based Grid for easy OOCSS development
-///
-/// @group flex-grid
-////
-
-/// Number of colums for the grid-classes
 $columns: 12 !default;
-
-/// Space between columns as padding inside the grid-columns - 15px on each side
 $gutter: 30px !default;
-
-/// Container width for screens over 990px wide.
 $container: 960px !default;
-
-/// Activate/deactivate responsive classes
+$placeholder-grid: false !default;
+$class-grid: true !default;
 $responsive: true !default;
-
-$responsive-breakpoints: null;
-
-$grid-container-prefix: container;
-$grid-row-prefix: row;
-$grid-row-utility-prefix: pos;
-$grid-item-prefix: item;
-$grid-offset-prefix: offset;
-
-@if (not $responsive) {
-  $responsive-breakpoints: (
-          sm: 0
-  );
-}
-
 /// Breakpoints for responsive design - no prefix = mobile, sm = pads, md = larger screens
 $responsive-breakpoints: (
         sm: 0,
@@ -41,26 +15,15 @@ $responsive-breakpoints: (
         lg: 992px
 ) !default;
 
-/// Settings to remove the smallest responsive size suffix
+$grid-prefix: true !default;
 $remove-base-suffix: true !default;
 
-/// Activate/Deactivate grid prefix for all grid glasses.
-$grid-prefix: true !default;
-
-/// Specify the prefix for the grid
 $grid-prefix-type: g;
-
-/// Base requirements - Box Sizing
-html {
-  box-sizing: border-box;
-}
-
-/// Base requirements - Box Sizing - all inherit
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
+$grid-container-prefix: container !default;
+$grid-row-prefix: row !default;
+$grid-row-utility-prefix: pos !default;
+$grid-item-prefix: item !default;
+$grid-offset-prefix: offset !default;
 
 /// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
 /// @param screen-size
@@ -78,39 +41,46 @@ html {
   }
 }
 
+
+
 @mixin prefix-suffix-constructor($class, $size: "", $args...) {
+  $grid-type: '.' !default;
+  @if ($placeholder-grid) {
+    $grid-type: '%';
+  }
   @if ($size != "") {
     @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and $grid-prefix) {
-      .#{$grid-prefix-type}-#{$class}#{$args} {
+
+      #{$grid-type}#{$grid-prefix-type}-#{$class}#{$args} {
         @content
       }
     } @else if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and not $grid-prefix) {
-      .#{$class}#{$args} {
+      #{$grid-type}#{$class}#{$args} {
         @content
       }
     } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and $grid-prefix) {
-      .#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+      #{$grid-type}#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
         @content
       }
     } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and not $grid-prefix) {
-      .#{$class}-#{$size}#{$args} {
+      #{$grid-type}#{$class}-#{$size}#{$args} {
         @content
       }
     } @else if (map_get($responsive-breakpoints, $size) != 0 and $grid-prefix) {
-      .#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+      #{$grid-type}#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
         @content
       }
     } @else if (map_get($responsive-breakpoints, $size) != 0 and not $grid-prefix) {
-      .#{$class}-#{$size}#{$args} {
+      #{$grid-type}#{$class}-#{$size}#{$args} {
         @content
       }
     }
   } @else if ($grid-prefix) {
-    .#{$grid-prefix-type}-#{$class}#{$args} {
+    #{$grid-type}#{$grid-prefix-type}-#{$class}#{$args} {
       @content
     }
   } @else {
-    .#{$class}#{$args} {
+    #{$grid-type}#{$class}#{$args} {
       @content
     }
   }
@@ -156,6 +126,26 @@ $item-utilities: (
       }
     }
   }
+}
+
+@if (not $responsive) {
+  $responsive-breakpoints: (
+          sm: 0
+  );
+}
+
+/*-------------------------------------*
+  #Base HTML Requirements
+\*-------------------------------------*/
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 /*-------------------------------------*
@@ -276,3 +266,7 @@ $item-utilities: (
     }
   }
 }
+
+/*------------------------------------------------------------------------------*
+  #FLEX-GRID - END
+\*------------------------------------------------------------------------------*/
