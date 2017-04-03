@@ -17,31 +17,38 @@ $gutter: 30px !default;
 /// Container width for screens over 990px wide.
 $container: 960px !default;
 
+/// Activate/deactivate responsive classes
+$responsive: true !default;
+
+$responsive-breakpoints: null;
+
+$grid-container-prefix: container;
+$grid-row-prefix: row;
+$grid-row-utility-prefix: pos;
+$grid-item-prefix: item;
+$grid-offset-prefix: offset;
+
+@if (not $responsive) {
+  $responsive-breakpoints: (
+          sm: 0
+  );
+}
+
 /// Breakpoints for responsive design - no prefix = mobile, sm = pads, md = larger screens
 $responsive-breakpoints: (
+        sm: 0,
         md: 576px,
         lg: 992px
-);
+) !default;
 
-/// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
-/// @param screen-size
-@mixin screen-size($size) {
-  @if ($size == "xs") {
-    @content
-  } @else {
-    @media (min-width: map-get($responsive-breakpoints, $size)) {
-      @content;
-    }
-  }
-}
+/// Settings to remove the smallest responsive size suffix
+$remove-base-suffix: true !default;
 
-@mixin grid__item-utilities($class) {
-  &--fs { @extend #{$class}; align-self: flex-start; }
-  &--fe { @extend #{$class}; align-self: flex-end; }
-  &--center { @extend #{$class}; align-self: center }
-  &--bl { @extend #{$class}; align-self: baseline }
-  &--st { @extend #{$class}; align-self: stretch }
-}
+/// Activate/Deactivate grid prefix for all grid glasses.
+$grid-prefix: true !default;
+
+/// Specify the prefix for the grid
+$grid-prefix-type: g;
 
 /// Base requirements - Box Sizing
 html {
@@ -55,12 +62,107 @@ html {
   box-sizing: inherit;
 }
 
+/// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
+/// @param screen-size
+@mixin screen-size($size) {
+  @if (map_get($responsive-breakpoints, $size) == 0 or $size == 0) {
+    @content
+  } @else if (map-get($responsive-breakpoints, $size)) {
+    @media (min-width: map-get($responsive-breakpoints, $size)) {
+      @content;
+    }
+  } @else if (type_of($size) == 'number') {
+    @media (min-width: $size) {
+      @content;
+    }
+  }
+}
+
+@mixin prefix-suffix-constructor($class, $size: "", $args...) {
+  @if ($size != "") {
+    @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and $grid-prefix) {
+      .#{$grid-prefix-type}-#{$class}#{$args} {
+        @content
+      }
+    } @else if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and not $grid-prefix) {
+      .#{$class}#{$args} {
+        @content
+      }
+    } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and $grid-prefix) {
+      .#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+        @content
+      }
+    } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and not $grid-prefix) {
+      .#{$class}-#{$size}#{$args} {
+        @content
+      }
+    } @else if (map_get($responsive-breakpoints, $size) != 0 and $grid-prefix) {
+      .#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+        @content
+      }
+    } @else if (map_get($responsive-breakpoints, $size) != 0 and not $grid-prefix) {
+      .#{$class}-#{$size}#{$args} {
+        @content
+      }
+    }
+  } @else if ($grid-prefix) {
+    .#{$grid-prefix-type}-#{$class}#{$args} {
+      @content
+    }
+  } @else {
+    .#{$class}#{$args} {
+      @content
+    }
+  }
+}
+
+$row-utilities: (
+        xy-center: (justify-content: center, align-items: center),
+        x-fs: (justify-content: flex-start),
+        x-fe: (justify-content: flex-end),
+        x-center: (justify-content: center),
+        x-sa: (justify-content: space-around),
+        x-sb: (justify-content: space-between),
+        y-fs: (align-items: flex-start),
+        y-fe: (align-items: flex-end),
+        y-center: (align-items: center),
+        y-bl: (align-items: baseline),
+        y-st: (align-items: stretch)
+);
+
+@mixin row-utilities($class, $size) {
+  @each $utility-class, $sub-map in $row-utilities {
+    @include prefix-suffix-constructor(#{$class}, $size, -#{$utility-class}) {
+      @each $property, $value in $sub-map {
+        #{$property}: $value;
+      }
+    }
+  }
+}
+
+$item-utilities: (
+        fs: (align-self: flex-start),
+        fe: (align-self: flex-end),
+        center: (align-self: center),
+        bl: (align-self: baseline),
+        st: (align-self: stretch),
+);
+
+@mixin item-utilities($class, $size) {
+  @each $utility-class, $sub-map in $item-utilities {
+    @include prefix-suffix-constructor(#{$class}, $size, -#{$utility-class}) {
+      @each $property, $value in $sub-map {
+        #{$property}: $value;
+      }
+    }
+  }
+}
+
 /*-------------------------------------*
   #Grid Container
 \*-------------------------------------*/
 
-/// Fixed-width container
-.container {
+%grid-container {
   margin-left: auto;
   margin-right: auto;
   width: $container;
@@ -70,31 +172,26 @@ html {
   padding-right: 15px;
 }
 
+/// Fixed-width container
+@include prefix-suffix-constructor($grid-container-prefix) {
+  @extend %grid-container;
+}
+
 /*-------------------------------------*
   #Grid Row Classes
 \*-------------------------------------*/
-%grid {
+%grid-row {
   position: relative;
   flex-flow: row wrap;
   margin-left: -($gutter / 2);
   margin-right: -($gutter / 2);
 }
 
-/// Grid Rows
-.grid {
-  @extend %grid;
-  display: flex;
-  @each $key, $value in $responsive-breakpoints {
-    &--#{$key} {
-      @extend %grid;
-      display: block;
-    }
-  }
-  @each $key, $value in $responsive-breakpoints {
-    &--#{$key} {
-      @include screen-size($key) {
-        display: flex;
-      }
+@each $size, $value in $responsive-breakpoints {
+  @include prefix-suffix-constructor($grid-row-prefix, #{$size}) {
+    @extend %grid-row;
+    @include screen-size($size) {
+      display: flex;
     }
   }
 }
@@ -102,107 +199,80 @@ html {
 /*-------------------------------------*
   #Grid Row Utility Classes
 \*-------------------------------------*/
-
-.no-padding {
+@include prefix-suffix-constructor(no-padding) {
   margin-left: 0;
   margin-right: 0;
-  > [class^=grid__item] {
+  > [class~=item] {
     padding-left: 0;
     padding-right: 0;
   }
 }
 
-.add-padding {
+@include prefix-suffix-constructor(add-padding) {
   padding-right: ($gutter / 2);
   padding-left: ($gutter / 2);
 }
 
-//@formatter:off
-%--xy-center { justify-content: center; align-items: center; }
-%--x-fs { justify-content: flex-start; }
-%--x-fe { justify-content: flex-end; }
-%--x-center { justify-content: center; }
-%--x-sa { justify-content: space-around; }
-%--x-sb { justify-content: space-between; }
-%--y-fs { align-items: flex-start; }
-%--y-fe { align-items: flex-end; }
-%--y-center {; align-items: center; }
-%--y-bl { align-items: baseline; }
-%--y-st { align-items: stretch; }
-//@formatter:on
-
-@mixin grid-utilities($class) {
-  &--xy-center { @extend #{$class}, %--xy-center; }
-  &--x-fs { @extend #{$class}, %--x-fs; }
-  &--x-fe { @extend #{$class}, %--x-fe; }
-  &--x-center { @extend #{$class}, %--x-center; }
-  &--x-sa { @extend #{$class}, %--x-sa; }
-  &--x-sb { @extend #{$class}, %--x-sb; }
-  &--y-fs { @extend #{$class}, %--y-fs; }
-  &--y-fe { @extend #{$class}, %--x-fe; }
-  &--y-center { @extend #{$class}, %--y-center; }
-  &--y-bl { @extend #{$class}, %--y-bl; }
-  &--y-st { @extend #{$class}, %--y-st; }
-}
-
-.grid {
-  @include grid-utilities(&);
-  @each $key, $value in $responsive-breakpoints {
-    &--#{$key} {
-      @include grid-utilities(&);
-    }
+@each $size, $value in $responsive-breakpoints {
+  @include screen-size($size) {
+    @include row-utilities($grid-row-utility-prefix, $size)
   }
 }
 
 /*-------------------------------------*
-  #Grid__items - all screens
+  #Grid Items
 \*-------------------------------------*/
-/// Grid Items
-.grid__item {
+
+%grid-item {
   position: relative;
   min-height: 1px;
-  flex: 1;
   padding-right: ($gutter / 2);
   padding-left: ($gutter / 2);
-  @include grid__item-utilities(&);
-  @for $i from 1 through $columns {
-    &-#{$i} { @extend .grid__item; flex: 0 0 percentage($i / $columns); }
+  flex: 0 0 100%;
+}
+
+@each $size, $value in $responsive-breakpoints {
+  @include prefix-suffix-constructor($grid-item-prefix, $size) {
+    @extend %grid-item;
+    @include screen-size($size) {
+      flex: 1;
+    }
   }
 }
 
-/// Grid Items - Responsive Components
-@each $key, $value in $responsive-breakpoints {
-  /*-------------------------------------*
-    #Responsive min-width: #{$key} - #{$value}
-  \*-------------------------------------*/
-  .grid__item--#{$key} {
-    @extend .grid__item;
-    flex: 0 0 100%;
-    @for $i from 1 through $columns {
-      &-#{$i} { @extend .grid__item; }
+@each $size, $value in $responsive-breakpoints {
+  @for $i from 1 through $columns {
+    @include prefix-suffix-constructor($grid-item-prefix, $size, -#{$i}) {
+      @extend %grid-item;
     }
   }
-  @include screen-size($key) {
-    .grid__item--#{$key} {
-      flex: 1;
-      @for $i from 1 through $columns {
-        &-#{$i} { flex: 0 0 percentage($i / $columns); }
+}
+
+@each $size, $value in $responsive-breakpoints {
+  @include screen-size($size) {
+    @for $i from 1 through $columns {
+      @include prefix-suffix-constructor($grid-item-prefix, $size, -#{$i}) {
+        flex: 0 0 percentage($i / $columns);
       }
     }
   }
 }
 
 /*-------------------------------------*
-  #Offset grid__items
+  #Grid Item Utility Classes
 \*-------------------------------------*/
-@for $i from 1 through $columns {
-  .offset-#{$i} { margin-left: percentage($i / $columns); }
+@each $size, $value in $responsive-breakpoints {
+  @include screen-size($size) {
+    @include item-utilities($grid-item-prefix, $size)
+  }
 }
 
-@each $key, $value in $responsive-breakpoints {
-  @include screen-size($key) {
+@each $size, $value in $responsive-breakpoints {
+  @include screen-size($size) {
     @for $i from 1 through $columns {
-      .offset-#{$key}-#{$i} { margin-left: percentage($i / $columns); }
+      @include prefix-suffix-constructor($grid-offset-prefix, $size, -#{$i}) {
+        margin-left: percentage($i / $columns)
+      }
     }
   }
 }

@@ -1,0 +1,247 @@
+/*------------------------------------------------------------------------------*
+  #FLEX-GRID - START
+\*------------------------------------------------------------------------------*/
+
+////
+/// Responsive Flex based Grid for easy OOCSS development
+///
+/// @group flex-grid
+////
+
+/// Number of colums for the grid-classes
+$columns: 12 !default;
+
+/// Space between columns as padding inside the grid-columns - 15px on each side
+$gutter: 30px !default;
+
+/// Container width for screens over 990px wide.
+$container: 960px !default;
+
+/// Breakpoints for responsive design - no prefix = mobile, sm = pads, md = larger screens
+$responsive-breakpoints: (
+        sm: 0,
+        md: 576px,
+        lg: 992px
+);
+
+$remove-base-prefix: true !default;
+
+/// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
+/// @param screen-size
+@mixin screen-size($size) {
+  @if (map_get($responsive-breakpoints, $size) == 0) {
+    @content
+  } @else {
+    @media (min-width: map-get($responsive-breakpoints, $size)) {
+      @content;
+    }
+  }
+}
+
+@mixin grid__item-utilities($class) {
+  &--fs { @extend #{$class}; align-self: flex-start; }
+  &--fe { @extend #{$class}; align-self: flex-end; }
+  &--center { @extend #{$class}; align-self: center }
+  &--bl { @extend #{$class}; align-self: baseline }
+  &--st { @extend #{$class}; align-self: stretch }
+}
+
+/// Base requirements - Box Sizing
+html {
+  box-sizing: border-box;
+}
+
+/// Base requirements - Box Sizing - all inherit
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/*-------------------------------------*
+  #Grid Container
+\*-------------------------------------*/
+
+/// Fixed-width container
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  width: $container;
+  max-width: 100%;
+  position: relative;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/*-------------------------------------*
+  #Grid Row Classes
+\*-------------------------------------*/
+%grid {
+  position: relative;
+  flex-flow: row wrap;
+  margin-left: -($gutter / 2);
+  margin-right: -($gutter / 2);
+}
+
+/// Grid Rows
+.grid {
+  @extend %grid;
+  display: flex;
+  @each $size, $value in $responsive-breakpoints {
+    @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-prefix) {
+      & {
+        @extend %grid;
+        display: block;
+      }
+    } @else if (map_get($responsive-breakpoints, $size) != 0 or $remove-base-prefix == false) {
+      &--#{$size} {
+        @extend %grid;
+        display: block;
+      }
+    }
+  }
+  @each $size, $value in $responsive-breakpoints {
+    @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-prefix) {
+      & {
+        @include screen-size($size) {
+          display: flex;
+        }
+      }
+    } @else if (map_get($responsive-breakpoints, $size) != 0 or $remove-base-prefix == false) {
+      &--#{$size} {
+        @include screen-size($size) {
+          display: flex;
+        }
+      }
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Grid Row Utility Classes
+\*-------------------------------------*/
+
+.no-padding {
+  margin-left: 0;
+  margin-right: 0;
+  > [class^=grid__item] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.add-padding {
+  padding-right: ($gutter / 2);
+  padding-left: ($gutter / 2);
+}
+
+//@formatter:off
+%--xy-center { justify-content: center; align-items: center; }
+%--x-fs { justify-content: flex-start; }
+%--x-fe { justify-content: flex-end; }
+%--x-center { justify-content: center; }
+%--x-sa { justify-content: space-around; }
+%--x-sb { justify-content: space-between; }
+%--y-fs { align-items: flex-start; }
+%--y-fe { align-items: flex-end; }
+%--y-center {; align-items: center; }
+%--y-bl { align-items: baseline; }
+%--y-st { align-items: stretch; }
+//@formatter:on
+
+@mixin grid-utilities($class) {
+  &--xy-center { @extend #{$class}, %--xy-center; }
+  &--x-fs { @extend #{$class}, %--x-fs; }
+  &--x-fe { @extend #{$class}, %--x-fe; }
+  &--x-center { @extend #{$class}, %--x-center; }
+  &--x-sa { @extend #{$class}, %--x-sa; }
+  &--x-sb { @extend #{$class}, %--x-sb; }
+  &--y-fs { @extend #{$class}, %--y-fs; }
+  &--y-fe { @extend #{$class}, %--x-fe; }
+  &--y-center { @extend #{$class}, %--y-center; }
+  &--y-bl { @extend #{$class}, %--y-bl; }
+  &--y-st { @extend #{$class}, %--y-st; }
+}
+
+.grid {
+  @include grid-utilities(&);
+  @each $size, $value in $responsive-breakpoints {
+    @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-prefix) {
+      & {
+        @include grid-utilities(&);
+      }
+    } @else if (map_get($responsive-breakpoints, $size) != 0 or $remove-base-prefix == false) {
+      &--#{$size} {
+        @include grid-utilities(&);
+      }
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Grid__items - all screens
+\*-------------------------------------*/
+/// Grid Items
+.grid__item {
+  position: relative;
+  min-height: 1px;
+  flex: 1;
+  padding-right: ($gutter / 2);
+  padding-left: ($gutter / 2);
+  @include grid__item-utilities(&);
+  @for $i from 1 through $columns {
+    &-#{$i} { @extend .grid__item; flex: 0 0 percentage($i / $columns); }
+  }
+}
+
+/// Grid Items - Responsive Components
+@each $size, $value in $responsive-breakpoints {
+  /*-------------------------------------*
+    #Responsive min-width: #{$size} - #{$value}
+  \*-------------------------------------*/
+  @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-prefix) {
+    .grid__item {
+      flex: 1;
+      @for $i from 1 through $columns {
+        &-#{$i} { flex: 0 0 percentage($i / $columns); }
+      }
+    }
+  } @else if (map_get($responsive-breakpoints, $size) != 0 or $remove-base-prefix == false) {
+    .grid__item--#{$size} {
+      @extend .grid__item;
+      flex: 0 0 100%;
+      @for $i from 1 through $columns {
+        &-#{$i} { @extend .grid__item; }
+      }
+    }
+    @include screen-size($size) {
+      .grid__item--#{$size} {
+        flex: 1;
+        @for $i from 1 through $columns {
+          &-#{$i} { flex: 0 0 percentage($i / $columns); }
+        }
+      }
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Offset grid__items
+\*-------------------------------------*/
+@for $i from 1 through $columns {
+  .offset-#{$i} { margin-left: percentage($i / $columns); }
+}
+
+@each $size, $value in $responsive-breakpoints {
+  @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-prefix) {
+    @for $i from 1 through $columns {
+      .offset-#{$i} { margin-left: percentage($i / $columns); }
+    }
+  } @else if (map_get($responsive-breakpoints, $size) != 0 or $remove-base-prefix == false) {
+    @include screen-size($size) {
+      @for $i from 1 through $columns {
+        .offset-#{$size}-#{$i} { margin-left: percentage($i / $columns); }
+      }
+    }
+  }
+}
