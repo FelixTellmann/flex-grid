@@ -22,11 +22,18 @@ $grid-prefix-type: g;
 $grid-container-prefix: container !default;
 $grid-row-prefix: row !default;
 $grid-row-utility-prefix: pos !default;
-$grid-item-prefix: item !default;
+$grid-item-prefix: col !default;
 $grid-offset-prefix: offset !default;
 
 /// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
 /// @param screen-size
+
+@if (not $responsive) {
+  $responsive-breakpoints: (
+          '': 0
+  );
+}
+
 @mixin screen-size($size) {
   @if (map_get($responsive-breakpoints, $size) == 0 or $size == 0) {
     @content
@@ -40,8 +47,6 @@ $grid-offset-prefix: offset !default;
     }
   }
 }
-
-
 
 @mixin prefix-suffix-constructor($class, $size: "", $args...) {
   $grid-type: '.' !default;
@@ -128,11 +133,7 @@ $item-utilities: (
   }
 }
 
-@if (not $responsive) {
-  $responsive-breakpoints: (
-          sm: 0
-  );
-}
+
 
 /*-------------------------------------*
   #Base HTML Requirements
