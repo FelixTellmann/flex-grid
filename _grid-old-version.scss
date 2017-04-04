@@ -2,22 +2,16 @@
   #FLEX-GRID - START
 \*------------------------------------------------------------------------------*/
 
-////
-/// Responsive Flex based Grid for easy OOCSS development
-///
-/// @group flex-grid
-////
 
-/// Number of colums for the grid-classes
 $columns: 12 !default;
 
-/// Space between columns as padding inside the grid-columns - 15px on each side
+
 $gutter: 30px !default;
 
-/// Container width for screens over 990px wide.
+
 $container: 960px !default;
 
-/// Breakpoints for responsive design - no prefix = mobile, sm = pads, md = larger screens
+
 $responsive-breakpoints: (
         sm: 0,
         md: 576px,
@@ -26,8 +20,7 @@ $responsive-breakpoints: (
 
 $remove-base-prefix: true !default;
 
-/// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
-/// @param screen-size
+
 @mixin screen-size($size) {
   @if (map_get($responsive-breakpoints, $size) == 0) {
     @content
@@ -46,12 +39,12 @@ $remove-base-prefix: true !default;
   &--st { @extend #{$class}; align-self: stretch }
 }
 
-/// Base requirements - Box Sizing
+
 html {
   box-sizing: border-box;
 }
 
-/// Base requirements - Box Sizing - all inherit
+
 *,
 *::before,
 *::after {
@@ -62,7 +55,7 @@ html {
   #Grid Container
 \*-------------------------------------*/
 
-/// Fixed-width container
+
 .container {
   margin-left: auto;
   margin-right: auto;
@@ -83,7 +76,7 @@ html {
   margin-right: -($gutter / 2);
 }
 
-/// Grid Rows
+
 .grid {
   @extend %grid;
   display: flex;
@@ -181,7 +174,7 @@ html {
 /*-------------------------------------*
   #Grid__items - all screens
 \*-------------------------------------*/
-/// Grid Items
+
 .grid__item {
   position: relative;
   min-height: 1px;
@@ -194,7 +187,7 @@ html {
   }
 }
 
-/// Grid Items - Responsive Components
+
 @each $size, $value in $responsive-breakpoints {
   /*-------------------------------------*
     #Responsive min-width: #{$size} - #{$value}

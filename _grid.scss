@@ -1,32 +1,40 @@
+////
+/// Flex based Responsive Grid - Fully Customizable
+/// @group Flex-Grid
+///
+///
+////
 /*------------------------------------------------------------------------------*
   #FLEX-GRID - START
 \*------------------------------------------------------------------------------*/
 
+//*-------------------------------------*
+//  #Grid Settings
+//\*-------------------------------------*/
 $columns: 12 !default;
 $gutter: 30px !default;
 $container: 960px !default;
 $placeholder-grid: false !default;
 $class-grid: true !default;
 $responsive: true !default;
-/// Breakpoints for responsive design - no prefix = mobile, sm = pads, md = larger screens
+$grid-prefix: true !default;
+$remove-base-suffix: true !default;
 $responsive-breakpoints: (
         sm: 0,
         md: 576px,
         lg: 992px
 ) !default;
 
-$grid-prefix: true !default;
-$remove-base-suffix: true !default;
-
-$grid-prefix-type: g;
+//*-------------------------------------*
+//  #Grid - Default names
+//\*-------------------------------------*/
+$grid-prefix-type: g !default;
 $grid-container-prefix: container !default;
 $grid-row-prefix: row !default;
 $grid-row-utility-prefix: pos !default;
 $grid-item-prefix: col !default;
 $grid-offset-prefix: offset !default;
 
-/// Mixin for mobile first development - @media (min-width: $responsive breakpoint)
-/// @param screen-size
 
 @if (not $responsive) {
   $responsive-breakpoints: (
