@@ -30,6 +30,7 @@ $grid-item-prefix: col !default;
 $grid-offset-prefix: offset !default;
 
 
+
 @if (not $responsive) {
   $responsive-breakpoints: (
           '': 0
