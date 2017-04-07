@@ -5,15 +5,15 @@
 //*-------------------------------------*
 //  #Grid Settings
 //\*-------------------------------------*/
-$columns: 12 !default;
-$gutter: 30px !default;
-$container: 960px !default;
-$placeholder-grid: false !default;
-$class-grid: true !default;
-$responsive: true !default;
-$grid-prefix: true !default;
-$remove-base-suffix: true !default;
-$responsive-breakpoints: (
+$g-columns: 12 !default;
+$g-gutter: 30px !default;
+$g-container: 960px !default;
+$g-placeholder-grid: false !default;
+$g-class-grid: true !default;
+$g-responsive: true !default;
+$g-grid-prefix: true !default;
+$g-remove-base-suffix: true !default;
+$g-responsive-breakpoints: (
         sm: 0,
         md: 576px,
         lg: 992px
@@ -22,79 +22,79 @@ $responsive-breakpoints: (
 //*-------------------------------------*
 //  #Grid - Default names
 //\*-------------------------------------*/
-$grid-prefix-type: g !default;
-$grid-container-prefix: container !default;
-$grid-row-prefix: row !default;
-$grid-row-utility-prefix: pos !default;
-$grid-item-prefix: col !default;
-$grid-offset-prefix: offset !default;
+$g-prefix-type: g !default;
+$g-container-prefix: container !default;
+$g-row-prefix: row !default;
+$g-row-utility-prefix: pos !default;
+$g-item-prefix: col !default;
+$g-offset-prefix: offset !default;
 
 
 
-@if (not $responsive) {
+@if (not $g-responsive) {
   $responsive-breakpoints: (
           '': 0
   );
 }
 
-@mixin screen-size($size) {
-  @if (map_get($responsive-breakpoints, $size) == 0 or $size == 0) {
+@mixin screen-size($g-size) {
+  @if (map_get($g-responsive-breakpoints, $g-size) == 0 or $g-size == 0) {
     @content
-  } @else if (map-get($responsive-breakpoints, $size)) {
-    @media (min-width: map-get($responsive-breakpoints, $size)) {
+  } @else if (map-get($g-responsive-breakpoints, $g-size)) {
+    @media (min-width: map-get($g-responsive-breakpoints, $g-size)) {
       @content;
     }
-  } @else if (type_of($size) == 'number') {
-    @media (min-width: $size) {
+  } @else if (type_of($g-size) == 'number') {
+    @media (min-width: $g-size) {
       @content;
     }
   }
 }
 
-@mixin prefix-suffix-constructor($class, $size: "", $args...) {
-  $grid-type: '.' !default;
-  @if ($placeholder-grid) {
-    $grid-type: '%';
+@mixin prefix-suffix-constructor($g-class, $g-size: "", $args...) {
+  $g-type: '.' !default;
+  @if ($g-placeholder-grid) {
+    $g-type: '%';
   }
-  @if ($size != "") {
-    @if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and $grid-prefix) {
+  @if ($g-size != "") {
+    @if (map_get($g-responsive-breakpoints, $g-size) == 0 and $g-remove-base-suffix and $g-grid-prefix) {
 
-      #{$grid-type}#{$grid-prefix-type}-#{$class}#{$args} {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($responsive-breakpoints, $size) == 0 and $remove-base-suffix and not $grid-prefix) {
-      #{$grid-type}#{$class}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and $g-remove-base-suffix and not $g-grid-prefix) {
+      #{$g-type}#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and $grid-prefix) {
-      #{$grid-type}#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and not $g-remove-base-suffix and $g-grid-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$g-size}#{$args} {
         @content
       }
-    } @else if (map_get($responsive-breakpoints, $size) == 0 and not $remove-base-suffix and not $grid-prefix) {
-      #{$grid-type}#{$class}-#{$size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and not $g-remove-base-suffix and not $g-grid-prefix) {
+      #{$g-type}#{$g-class}-#{$g-size}#{$args} {
         @content
       }
-    } @else if (map_get($responsive-breakpoints, $size) != 0 and $grid-prefix) {
-      #{$grid-type}#{$grid-prefix-type}-#{$class}-#{$size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $g-size) != 0 and $g-grid-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$g-size}#{$args} {
         @content
       }
-    } @else if (map_get($responsive-breakpoints, $size) != 0 and not $grid-prefix) {
-      #{$grid-type}#{$class}-#{$size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $g-size) != 0 and not $g-grid-prefix) {
+      #{$g-type}#{$g-class}-#{$g-size}#{$args} {
         @content
       }
     }
-  } @else if ($grid-prefix) {
-    #{$grid-type}#{$grid-prefix-type}-#{$class}#{$args} {
+  } @else if ($g-grid-prefix) {
+    #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
       @content
     }
   } @else {
-    #{$grid-type}#{$class}#{$args} {
+    #{$g-type}#{$g-class}#{$args} {
       @content
     }
   }
 }
 
-$row-utilities: (
+$g-row-utilities: (
         xy-center: (justify-content: center, align-items: center),
         x-fs: (justify-content: flex-start),
         x-fe: (justify-content: flex-end),
@@ -108,9 +108,9 @@ $row-utilities: (
         y-st: (align-items: stretch)
 );
 
-@mixin row-utilities($class, $size) {
-  @each $utility-class, $sub-map in $row-utilities {
-    @include prefix-suffix-constructor(#{$class}, $size, -#{$utility-class}) {
+@mixin row-utilities($g-class, $g-size) {
+  @each $utility-class, $sub-map in $g-row-utilities {
+    @include prefix-suffix-constructor(#{$g-class}, $g-size, -#{$utility-class}) {
       @each $property, $value in $sub-map {
         #{$property}: $value;
       }
@@ -126,9 +126,9 @@ $item-utilities: (
         st: (align-self: stretch),
 );
 
-@mixin item-utilities($class, $size) {
+@mixin item-utilities($g-class, $g-size) {
   @each $utility-class, $sub-map in $item-utilities {
-    @include prefix-suffix-constructor(#{$class}, $size, -#{$utility-class}) {
+    @include prefix-suffix-constructor(#{$g-class}, $g-size, -#{$utility-class}) {
       @each $property, $value in $sub-map {
         #{$property}: $value;
       }
@@ -159,7 +159,7 @@ html {
 %grid-container {
   margin-left: auto;
   margin-right: auto;
-  width: $container;
+  width: $g-container;
   max-width: 100%;
   position: relative;
   padding-left: 15px;
@@ -167,7 +167,7 @@ html {
 }
 
 /// Fixed-width container
-@include prefix-suffix-constructor($grid-container-prefix) {
+@include prefix-suffix-constructor($g-container-prefix) {
   @extend %grid-container;
 }
 
@@ -177,14 +177,14 @@ html {
 %grid-row {
   position: relative;
   flex-flow: row wrap;
-  margin-left: -($gutter / 2);
-  margin-right: -($gutter / 2);
+  margin-left: -($g-gutter / 2);
+  margin-right: -($g-gutter / 2);
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @include prefix-suffix-constructor($grid-row-prefix, #{$size}) {
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-row-prefix, #{$g-size}) {
     @extend %grid-row;
-    @include screen-size($size) {
+    @include screen-size($g-size) {
       display: flex;
     }
   }
@@ -203,13 +203,13 @@ html {
 }
 
 @include prefix-suffix-constructor(add-padding) {
-  padding-right: ($gutter / 2);
-  padding-left: ($gutter / 2);
+  padding-right: ($g-gutter / 2);
+  padding-left: ($g-gutter / 2);
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @include screen-size($size) {
-    @include row-utilities($grid-row-utility-prefix, $size)
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include screen-size($g-size) {
+    @include row-utilities($g-row-utility-prefix, $g-size)
   }
 }
 
@@ -220,33 +220,33 @@ html {
 %grid-item {
   position: relative;
   min-height: 1px;
-  padding-right: ($gutter / 2);
-  padding-left: ($gutter / 2);
+  padding-right: ($g-gutter / 2);
+  padding-left: ($g-gutter / 2);
   flex: 0 0 100%;
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @include prefix-suffix-constructor($grid-item-prefix, $size) {
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-item-prefix, $g-size) {
     @extend %grid-item;
-    @include screen-size($size) {
+    @include screen-size($g-size) {
       flex: 1;
     }
   }
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @for $i from 1 through $columns {
-    @include prefix-suffix-constructor($grid-item-prefix, $size, -#{$i}) {
+@each $g-size, $value in $g-responsive-breakpoints {
+  @for $i from 1 through $g-columns {
+    @include prefix-suffix-constructor($g-item-prefix, $g-size, -#{$i}) {
       @extend %grid-item;
     }
   }
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @include screen-size($size) {
-    @for $i from 1 through $columns {
-      @include prefix-suffix-constructor($grid-item-prefix, $size, -#{$i}) {
-        flex: 0 0 percentage($i / $columns);
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include screen-size($g-size) {
+    @for $i from 1 through $g-columns {
+      @include prefix-suffix-constructor($g-item-prefix, $g-size, -#{$i}) {
+        flex: 0 0 percentage($i / $g-columns);
       }
     }
   }
@@ -255,17 +255,17 @@ html {
 /*-------------------------------------*
   #Grid Item Utility Classes
 \*-------------------------------------*/
-@each $size, $value in $responsive-breakpoints {
-  @include screen-size($size) {
-    @include item-utilities($grid-item-prefix, $size)
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include screen-size($g-size) {
+    @include item-utilities($g-item-prefix, $g-size)
   }
 }
 
-@each $size, $value in $responsive-breakpoints {
-  @include screen-size($size) {
-    @for $i from 1 through $columns {
-      @include prefix-suffix-constructor($grid-offset-prefix, $size, -#{$i}) {
-        margin-left: percentage($i / $columns)
+@each $g-size, $value in $g-responsive-breakpoints {
+  @include screen-size($g-size) {
+    @for $i from 1 through $g-columns {
+      @include prefix-suffix-constructor($g-offset-prefix, $g-size, -#{$i}) {
+        margin-left: percentage($i / $g-columns)
       }
     }
   }
