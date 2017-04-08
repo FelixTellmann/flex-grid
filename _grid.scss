@@ -29,57 +29,55 @@ $g-row-utility-prefix: pos !default;
 $g-item-prefix: col !default;
 $g-offset-prefix: offset !default;
 
-
-
 @if (not $g-responsive) {
   $responsive-breakpoints: (
           '': 0
   );
 }
 
-@mixin screen-size($g-size) {
-  @if (map_get($g-responsive-breakpoints, $g-size) == 0 or $g-size == 0) {
+@mixin screen-size($size) {
+  @if (map_get($g-responsive-breakpoints, $size) == 0 or $size == 0) {
     @content
-  } @else if (map-get($g-responsive-breakpoints, $g-size)) {
-    @media (min-width: map-get($g-responsive-breakpoints, $g-size)) {
+  } @else if (map-get($g-responsive-breakpoints, $size)) {
+    @media (min-width: map-get($g-responsive-breakpoints, $size)) {
       @content;
     }
-  } @else if (type_of($g-size) == 'number') {
-    @media (min-width: $g-size) {
+  } @else if (type_of($size) == 'number') {
+    @media (min-width: $size) {
       @content;
     }
   }
 }
 
-@mixin prefix-suffix-constructor($g-class, $g-size: "", $args...) {
+@mixin prefix-suffix-constructor($g-class, $size: "", $args...) {
   $g-type: '.' !default;
   @if ($g-placeholder-grid) {
     $g-type: '%';
   }
-  @if ($g-size != "") {
-    @if (map_get($g-responsive-breakpoints, $g-size) == 0 and $g-remove-base-suffix and $g-grid-prefix) {
+  @if ($size != "") {
+    @if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and $g-grid-prefix) {
 
       #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and $g-remove-base-suffix and not $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and not $g-grid-prefix) {
       #{$g-type}#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and not $g-remove-base-suffix and $g-grid-prefix) {
-      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$g-size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and $g-grid-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $g-size) == 0 and not $g-remove-base-suffix and not $g-grid-prefix) {
-      #{$g-type}#{$g-class}-#{$g-size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and not $g-grid-prefix) {
+      #{$g-type}#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $g-size) != 0 and $g-grid-prefix) {
-      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$g-size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and $g-grid-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $g-size) != 0 and not $g-grid-prefix) {
-      #{$g-type}#{$g-class}-#{$g-size}#{$args} {
+    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and not $g-grid-prefix) {
+      #{$g-type}#{$g-class}-#{$size}#{$args} {
         @content
       }
     }
@@ -108,9 +106,9 @@ $g-row-utilities: (
         y-st: (align-items: stretch)
 );
 
-@mixin row-utilities($g-class, $g-size) {
+@mixin row-utilities($g-class, $size) {
   @each $utility-class, $sub-map in $g-row-utilities {
-    @include prefix-suffix-constructor(#{$g-class}, $g-size, -#{$utility-class}) {
+    @include prefix-suffix-constructor(#{$g-class}, $size, -#{$utility-class}) {
       @each $property, $value in $sub-map {
         #{$property}: $value;
       }
@@ -126,17 +124,15 @@ $item-utilities: (
         st: (align-self: stretch),
 );
 
-@mixin item-utilities($g-class, $g-size) {
+@mixin item-utilities($g-class, $size) {
   @each $utility-class, $sub-map in $item-utilities {
-    @include prefix-suffix-constructor(#{$g-class}, $g-size, -#{$utility-class}) {
+    @include prefix-suffix-constructor(#{$g-class}, $size, -#{$utility-class}) {
       @each $property, $value in $sub-map {
         #{$property}: $value;
       }
     }
   }
 }
-
-
 
 /*-------------------------------------*
   #Base HTML Requirements
@@ -174,17 +170,16 @@ html {
 /*-------------------------------------*
   #Grid Row Classes
 \*-------------------------------------*/
-%grid-row {
+[class^=#{$g-prefix-type}-#{$g-row-prefix}] {
   position: relative;
   flex-flow: row wrap;
   margin-left: -($g-gutter / 2);
   margin-right: -($g-gutter / 2);
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include prefix-suffix-constructor($g-row-prefix, #{$g-size}) {
-    @extend %grid-row;
-    @include screen-size($g-size) {
+@each $size, $value in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
+    @include screen-size($size) {
       display: flex;
     }
   }
@@ -193,23 +188,32 @@ html {
 /*-------------------------------------*
   #Grid Row Utility Classes
 \*-------------------------------------*/
+
 @include prefix-suffix-constructor(no-padding) {
-  margin-left: 0;
-  margin-right: 0;
-  > [class~=item] {
+  @at-root [class^=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  > [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
     padding-left: 0;
     padding-right: 0;
   }
 }
 
 @include prefix-suffix-constructor(add-padding) {
-  padding-right: ($g-gutter / 2);
-  padding-left: ($g-gutter / 2);
+  @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+    padding-left: ($g-gutter / 2);
+    padding-right: ($g-gutter / 2);
+  }
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include screen-size($g-size) {
-    @include row-utilities($g-row-utility-prefix, $g-size)
+@each $size, $value in $g-responsive-breakpoints {
+  @include screen-size($size) {
+    @include row-utilities($g-row-utility-prefix, $size)
   }
 }
 
@@ -217,7 +221,7 @@ html {
   #Grid Items
 \*-------------------------------------*/
 
-%grid-item {
+[class^=#{$g-prefix-type}-#{$g-item-prefix}] {
   position: relative;
   min-height: 1px;
   padding-right: ($g-gutter / 2);
@@ -225,27 +229,25 @@ html {
   flex: 0 0 100%;
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include prefix-suffix-constructor($g-item-prefix, $g-size) {
-    @extend %grid-item;
-    @include screen-size($g-size) {
+@each $size, $value in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-item-prefix, $size) {
+    @include screen-size($size) {
       flex: 1;
     }
   }
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
+@each $size, $value in $g-responsive-breakpoints {
   @for $i from 1 through $g-columns {
-    @include prefix-suffix-constructor($g-item-prefix, $g-size, -#{$i}) {
-      @extend %grid-item;
+    @include prefix-suffix-constructor($g-item-prefix, $size, -#{$i}) {
     }
   }
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include screen-size($g-size) {
+@each $size, $value in $g-responsive-breakpoints {
+  @include screen-size($size) {
     @for $i from 1 through $g-columns {
-      @include prefix-suffix-constructor($g-item-prefix, $g-size, -#{$i}) {
+      @include prefix-suffix-constructor($g-item-prefix, $size, -#{$i}) {
         flex: 0 0 percentage($i / $g-columns);
       }
     }
@@ -255,16 +257,16 @@ html {
 /*-------------------------------------*
   #Grid Item Utility Classes
 \*-------------------------------------*/
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include screen-size($g-size) {
-    @include item-utilities($g-item-prefix, $g-size)
+@each $size, $value in $g-responsive-breakpoints {
+  @include screen-size($size) {
+    @include item-utilities($g-item-prefix, $size)
   }
 }
 
-@each $g-size, $value in $g-responsive-breakpoints {
-  @include screen-size($g-size) {
+@each $size, $value in $g-responsive-breakpoints {
+  @include screen-size($size) {
     @for $i from 1 through $g-columns {
-      @include prefix-suffix-constructor($g-offset-prefix, $g-size, -#{$i}) {
+      @include prefix-suffix-constructor($g-offset-prefix, $size, -#{$i}) {
         margin-left: percentage($i / $g-columns)
       }
     }
