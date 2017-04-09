@@ -1,4 +1,4 @@
-# FelixTellmann.com - Blog & Project Portfolio
+# Building a responsive Grid system that is fully customizable.
 
 // TODO: Write a proper project description.
 

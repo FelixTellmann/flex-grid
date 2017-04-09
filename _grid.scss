@@ -11,7 +11,7 @@ $g-container: 960px !default;
 $g-placeholder-grid: false !default;
 $g-class-grid: true !default;
 $g-responsive: true !default;
-$g-grid-prefix: true !default;
+$g-prefix: true !default;
 $g-remove-base-suffix: true !default;
 $g-responsive-breakpoints: (
         sm: 0,
@@ -55,33 +55,33 @@ $g-offset-prefix: offset !default;
     $g-type: '%';
   }
   @if ($size != "") {
-    @if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and $g-grid-prefix) {
+    @if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and $g-prefix) {
 
       #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and not $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and not $g-prefix) {
       #{$g-type}#{$g-class}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and $g-prefix) {
       #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and not $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) == 0 and not $g-remove-base-suffix and not $g-prefix) {
       #{$g-type}#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and $g-prefix) {
       #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$args} {
         @content
       }
-    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and not $g-grid-prefix) {
+    } @else if (map_get($g-responsive-breakpoints, $size) != 0 and not $g-prefix) {
       #{$g-type}#{$g-class}-#{$size}#{$args} {
         @content
       }
     }
-  } @else if ($g-grid-prefix) {
+  } @else if ($g-prefix) {
     #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
       @content
     }
@@ -170,17 +170,44 @@ html {
 /*-------------------------------------*
   #Grid Row Classes
 \*-------------------------------------*/
-[class^=#{$g-prefix-type}-#{$g-row-prefix}] {
+%grid-row {
   position: relative;
   flex-flow: row wrap;
   margin-left: -($g-gutter / 2);
   margin-right: -($g-gutter / 2);
 }
 
-@each $size, $value in $g-responsive-breakpoints {
-  @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
-    @include screen-size($size) {
-      display: flex;
+@if ($g-placeholder-grid) {
+  @each $size, $value in $g-responsive-breakpoints {
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
+      @extend %grid-row;
+      @include screen-size($size) {
+        display: flex;
+      }
+    }
+  }
+} @else {
+  @if ($g-prefix) {
+    [class^=#{$g-prefix-type}-#{$g-row-prefix}] {
+      position: relative;
+      flex-flow: row wrap;
+      margin-left: -($g-gutter / 2);
+      margin-right: -($g-gutter / 2);
+    }
+  } @else {
+    [class^=#{$g-row-prefix}] {
+      position: relative;
+      flex-flow: row wrap;
+      margin-left: -($g-gutter / 2);
+      margin-right: -($g-gutter / 2);
+    }
+  }
+
+  @each $size, $value in $g-responsive-breakpoints {
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
+      @include screen-size($size) {
+        display: flex;
+      }
     }
   }
 }
@@ -189,25 +216,50 @@ html {
   #Grid Row Utility Classes
 \*-------------------------------------*/
 
-@include prefix-suffix-constructor(no-padding) {
-  @at-root [class^=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
-    margin-left: 0;
-    margin-right: 0;
+@if ($g-prefix) {
+  @include prefix-suffix-constructor(no-padding) {
+    @at-root [class^=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    > [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
-  > [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
 
-@include prefix-suffix-constructor(add-padding) {
-  @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
-    padding-left: ($g-gutter / 2);
-    padding-right: ($g-gutter / 2);
+  @include prefix-suffix-constructor(add-padding) {
+    @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+      padding-left: ($g-gutter / 2);
+      padding-right: ($g-gutter / 2);
+    }
+  }
+} @else {
+
+  @include prefix-suffix-constructor(no-padding) {
+    @at-root [class^=#{$g-row-prefix}]#{&} {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    > [class^=#{$g-item-prefix}] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    @at-root [class^=#{$g-item-prefix}]#{&} {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  @include prefix-suffix-constructor(add-padding) {
+    @at-root [class^=#{$g-item-prefix}]#{&} {
+      padding-left: ($g-gutter / 2);
+      padding-right: ($g-gutter / 2);
+    }
   }
 }
 
@@ -221,25 +273,53 @@ html {
   #Grid Items
 \*-------------------------------------*/
 
-[class^=#{$g-prefix-type}-#{$g-item-prefix}] {
-  position: relative;
-  min-height: 1px;
-  padding-right: ($g-gutter / 2);
-  padding-left: ($g-gutter / 2);
-  flex: 0 0 100%;
-}
+@if ($g-placeholder-grid) {
+  %grid-item {
+    position: relative;
+    min-height: 1px;
+    padding-right: ($g-gutter / 2);
+    padding-left: ($g-gutter / 2);
+    flex: 0 0 100%;
+  }
 
-@each $size, $value in $g-responsive-breakpoints {
-  @include prefix-suffix-constructor($g-item-prefix, $size) {
-    @include screen-size($size) {
-      flex: 1;
+  @each $g-size, $value in $g-responsive-breakpoints {
+    @include prefix-suffix-constructor($g-item-prefix, $g-size) {
+      @extend %grid-item;
+      @include screen-size($g-size) {
+        flex: 1;
+      }
     }
   }
-}
-
-@each $size, $value in $g-responsive-breakpoints {
-  @for $i from 1 through $g-columns {
-    @include prefix-suffix-constructor($g-item-prefix, $size, -#{$i}) {
+  @each $g-size, $value in $g-responsive-breakpoints {
+    @for $i from 1 through $g-columns {
+      @include prefix-suffix-constructor($g-item-prefix, $g-size, -#{$i}) {
+        @extend %grid-item;
+      }
+    }
+  }
+} @else {
+  @if ($g-prefix) {
+    [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
+      position: relative;
+      min-height: 1px;
+      padding-right: ($g-gutter / 2);
+      padding-left: ($g-gutter / 2);
+      flex: 0 0 100%;
+    }
+  } @else {
+    [class^=#{$g-item-prefix}] {
+      position: relative;
+      min-height: 1px;
+      padding-right: ($g-gutter / 2);
+      padding-left: ($g-gutter / 2);
+      flex: 0 0 100%;
+    }
+  }
+  @each $size, $value in $g-responsive-breakpoints {
+    @include prefix-suffix-constructor($g-item-prefix, $size) {
+      @include screen-size($size) {
+        flex: 1;
+      }
     }
   }
 }
