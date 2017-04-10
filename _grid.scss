@@ -188,14 +188,14 @@ html {
   }
 } @else {
   @if ($g-prefix) {
-    [class^=#{$g-prefix-type}-#{$g-row-prefix}] {
+    [class*=#{$g-prefix-type}-#{$g-row-prefix}] {
       position: relative;
       flex-flow: row wrap;
       margin-left: -($g-gutter / 2);
       margin-right: -($g-gutter / 2);
     }
   } @else {
-    [class^=#{$g-row-prefix}] {
+    [class*=#{$g-row-prefix}] {
       position: relative;
       flex-flow: row wrap;
       margin-left: -($g-gutter / 2);
@@ -218,22 +218,22 @@ html {
 
 @if ($g-prefix) {
   @include prefix-suffix-constructor(no-padding) {
-    @at-root [class^=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
+    @at-root [class*=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
       margin-left: 0;
       margin-right: 0;
     }
-    > [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
+    > [class*=#{$g-prefix-type}-#{$g-item-prefix}] {
       padding-left: 0;
       padding-right: 0;
     }
-    @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
       padding-left: 0;
       padding-right: 0;
     }
   }
 
   @include prefix-suffix-constructor(add-padding) {
-    @at-root [class^=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
       padding-left: ($g-gutter / 2);
       padding-right: ($g-gutter / 2);
     }
@@ -241,22 +241,22 @@ html {
 } @else {
 
   @include prefix-suffix-constructor(no-padding) {
-    @at-root [class^=#{$g-row-prefix}]#{&} {
+    @at-root [class*=#{$g-row-prefix}]#{&} {
       margin-left: 0;
       margin-right: 0;
     }
-    > [class^=#{$g-item-prefix}] {
+    > [class*=#{$g-item-prefix}] {
       padding-left: 0;
       padding-right: 0;
     }
-    @at-root [class^=#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-item-prefix}]#{&} {
       padding-left: 0;
       padding-right: 0;
     }
   }
 
   @include prefix-suffix-constructor(add-padding) {
-    @at-root [class^=#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-item-prefix}]#{&} {
       padding-left: ($g-gutter / 2);
       padding-right: ($g-gutter / 2);
     }
@@ -299,7 +299,7 @@ html {
   }
 } @else {
   @if ($g-prefix) {
-    [class^=#{$g-prefix-type}-#{$g-item-prefix}] {
+    [class*=#{$g-prefix-type}-#{$g-item-prefix}] {
       position: relative;
       min-height: 1px;
       padding-right: ($g-gutter / 2);
@@ -307,7 +307,7 @@ html {
       flex: 0 0 100%;
     }
   } @else {
-    [class^=#{$g-item-prefix}] {
+    [class*=#{$g-item-prefix}] {
       position: relative;
       min-height: 1px;
       padding-right: ($g-gutter / 2);
