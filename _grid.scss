@@ -15,19 +15,23 @@ $g-prefix: true !default;
 $g-remove-base-suffix: true !default;
 $g-responsive-breakpoints: (
         sm: 0,
-        md: 576px,
-        lg: 992px
+        md: 750px,
+        lg: 990px,
+        xl: 1400px
 ) !default;
 
 //*-------------------------------------*
 //  #Grid - Default names
 //\*-------------------------------------*/
-$g-prefix-type: g !default;
+$g-prefix-type: grid !default;
 $g-container-prefix: container !default;
 $g-row-prefix: row !default;
 $g-row-utility-prefix: pos !default;
-$g-item-prefix: col !default;
+$g-item-prefix: item !default;
 $g-offset-prefix: offset !default;
+$g-no-padding: no-padding !default;
+$g-add-padding: add-padding !default;
+$g-type: '.' !default;
 
 @if (not $g-responsive) {
   $responsive-breakpoints: (
@@ -50,13 +54,13 @@ $g-offset-prefix: offset !default;
 }
 
 @mixin prefix-suffix-constructor($g-class, $size: "", $args...) {
-  $g-type: '.' !default;
+  
   @if ($g-placeholder-grid) {
     $g-type: '%';
   }
   @if ($size != "") {
     @if (map_get($g-responsive-breakpoints, $size) == 0 and $g-remove-base-suffix and $g-prefix) {
-
+      
       #{$g-type}#{$g-prefix-type}-#{$g-class}#{$args} {
         @content
       }
@@ -163,7 +167,7 @@ html {
 }
 
 /// Fixed-width container
-@include prefix-suffix-constructor($g-container-prefix) {
+@include prefix-suffix-constructor($g-container-prefix,'',null) {
   @extend %grid-container;
 }
 
@@ -179,7 +183,7 @@ html {
 
 @if ($g-placeholder-grid) {
   @each $size, $value in $g-responsive-breakpoints {
-    @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, null) {
       @extend %grid-row;
       @include screen-size($size) {
         display: flex;
@@ -202,9 +206,9 @@ html {
       margin-right: -($g-gutter / 2);
     }
   }
-
+  
   @each $size, $value in $g-responsive-breakpoints {
-    @include prefix-suffix-constructor($g-row-prefix, #{$size}) {
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, null) {
       @include screen-size($size) {
         display: flex;
       }
@@ -212,13 +216,15 @@ html {
   }
 }
 
+
 /*-------------------------------------*
   #Grid Row Utility Classes
 \*-------------------------------------*/
 
 @if ($g-prefix) {
-  @include prefix-suffix-constructor(no-padding) {
-    @at-root [class*=#{$g-prefix-type}-#{$g-row-prefix}]#{&} {
+  @include prefix-suffix-constructor($g-no-padding,'',null) {
+    
+    @at-root [class*=#{$g-prefix-type}-#{$g-row-prefix}].#{$g-prefix-type}-#{$g-no-padding} {
       margin-left: 0;
       margin-right: 0;
     }
@@ -226,22 +232,22 @@ html {
       padding-left: 0;
       padding-right: 0;
     }
-    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}].#{$g-prefix-type}-#{$g-no-padding} {
       padding-left: 0;
       padding-right: 0;
     }
   }
-
-  @include prefix-suffix-constructor(add-padding) {
-    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}]#{&} {
+  
+  @include prefix-suffix-constructor($g-add-padding,'',null) {
+    @at-root [class*=#{$g-prefix-type}-#{$g-item-prefix}].#{$g-prefix-type}-#{$g-add-padding} {
       padding-left: ($g-gutter / 2);
       padding-right: ($g-gutter / 2);
     }
   }
 } @else {
-
-  @include prefix-suffix-constructor(no-padding) {
-    @at-root [class*=#{$g-row-prefix}]#{&} {
+  
+  @include prefix-suffix-constructor($g-no-padding,'',null) {
+    @at-root [class*=#{$g-row-prefix}]#{$g-type}#{$g-no-padding} {
       margin-left: 0;
       margin-right: 0;
     }
@@ -249,14 +255,14 @@ html {
       padding-left: 0;
       padding-right: 0;
     }
-    @at-root [class*=#{$g-item-prefix}]#{&} {
+    @at-root [class*=#{$g-item-prefix}]#{$g-type}#{$g-no-padding} {
       padding-left: 0;
       padding-right: 0;
     }
   }
-
-  @include prefix-suffix-constructor(add-padding) {
-    @at-root [class*=#{$g-item-prefix}]#{&} {
+  
+  @include prefix-suffix-constructor($g-add-padding,'',null) {
+    @at-root [class*=#{$g-item-prefix}]#{$g-type}#{$g-add-padding} {
       padding-left: ($g-gutter / 2);
       padding-right: ($g-gutter / 2);
     }
@@ -268,6 +274,7 @@ html {
     @include row-utilities($g-row-utility-prefix, $size)
   }
 }
+
 
 /*-------------------------------------*
   #Grid Items
@@ -281,7 +288,7 @@ html {
     padding-left: ($g-gutter / 2);
     flex: 0 0 100%;
   }
-
+  
   @each $g-size, $value in $g-responsive-breakpoints {
     @include prefix-suffix-constructor($g-item-prefix, $g-size) {
       @extend %grid-item;
@@ -316,7 +323,7 @@ html {
     }
   }
   @each $size, $value in $g-responsive-breakpoints {
-    @include prefix-suffix-constructor($g-item-prefix, $size) {
+    @include prefix-suffix-constructor($g-item-prefix, $size, null) {
       @include screen-size($size) {
         flex: 1;
       }
@@ -333,6 +340,7 @@ html {
     }
   }
 }
+
 
 /*-------------------------------------*
   #Grid Item Utility Classes

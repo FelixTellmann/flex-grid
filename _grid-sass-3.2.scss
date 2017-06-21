@@ -1,0 +1,348 @@
+/*============================================================================
+  #g-grid
+    - Version 1.0.0
+    -
+==============================================================================*/
+
+//*-------------------------------------*
+//  #Grid Settings
+//\*-------------------------------------*/
+$g-columns: 12 !default;
+$g-gutter: 30px !default;
+$g-container: 960px !default;
+$g-class-grid: true !default;
+$g-prefix: true !default;
+$g-remove-base-suffix: true !default;
+$g-responsive-breakpoints: (sm, md, lg, xl);
+$g-responsive-breakpoint-sm: 0px;
+$g-responsive-breakpoint-md: 750px;
+$g-responsive-breakpoint-lg: 990px;
+$g-responsive-breakpoint-xl: 1400px;
+
+//*-------------------------------------*
+//  #Grid - Default names
+//\*-------------------------------------*/
+$g-prefix-type: grid !default;
+$g-container-prefix: container !default;
+$g-row-prefix: row !default;
+$g-row-utility-prefix: pos !default;
+$g-item-prefix: item !default;
+$g-offset-prefix: offset !default;
+$g-no-padding: no-padding !default;
+$g-add-padding: add-padding !default;
+$g-type: '.' !default;
+$g-empty: '';
+
+@mixin screen-size($size) {
+  @if ($size == 'sm' or $size == 0) {
+    @content
+  } @else if ($size == 'md') {
+    @media (min-width: $g-responsive-breakpoint-md) {
+      @content;
+    }
+  } @else if ($size == 'lg') {
+    @media (min-width: $g-responsive-breakpoint-lg) {
+      @content;
+    }
+  } @else if ($size == 'xl') {
+    @media (min-width: $g-responsive-breakpoint-xl) {
+      @content;
+    }
+  } @else if (type_of($size) == 'number') {
+    @media (min-width: $size) {
+      @content;
+    }
+  }
+}
+
+@mixin prefix-suffix-constructor($g-class, $size: "", $suffix:"") {
+  @if ($size != "") {
+    @if ($size == 'sm' and $g-remove-base-suffix and $g-prefix) {
+      
+      #{$g-type}#{$g-prefix-type}-#{$g-class}#{$suffix} {
+        @content
+      }
+    } @else if ($size == 'sm' and $g-remove-base-suffix and not $g-prefix) {
+      #{$g-type}#{$g-class}#{$suffix} {
+        @content
+      }
+    } @else if ($size == 'sm' and not $g-remove-base-suffix and $g-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$suffix} {
+        @content
+      }
+    } @else if ($size == 'sm' and not $g-remove-base-suffix and not $g-prefix) {
+      #{$g-type}#{$g-class}-#{$size}#{$suffix} {
+        @content
+      }
+    } @else if ($size != 'sm' and $g-prefix) {
+      #{$g-type}#{$g-prefix-type}-#{$g-class}-#{$size}#{$suffix} {
+        @content
+      }
+    } @else if ($size != 'sm' and not $g-prefix) {
+      #{$g-type}#{$g-class}-#{$size}#{$suffix} {
+        @content
+      }
+    }
+  } @else if ($g-prefix) {
+    #{$g-type}#{$g-prefix-type}-#{$g-class}#{$suffix} {
+      @content
+    }
+  } @else {
+    #{$g-type}#{$g-class}#{$suffix} {
+      @content
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Base HTML Requirements
+\*-------------------------------------*/
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/*-------------------------------------*
+  #Grid Container
+\*-------------------------------------*/
+
+%grid-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: $g-container;
+  max-width: 100%;
+  position: relative;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/// Fixed-width container
+@include prefix-suffix-constructor($g-container-prefix, '', $g-empty) {
+  @extend %grid-container;
+}
+
+/*================ Grid Row Classes ================*/
+
+%grid-row {
+  position: relative;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+  margin-left: -($g-gutter / 2);
+  margin-right: -($g-gutter / 2);
+}
+
+@if ($g-prefix) {
+  [class*=#{$g-prefix-type}-#{$g-row-prefix}] {
+    position: relative;
+    flex-flow: row wrap;
+    margin-left: -($g-gutter / 2);
+    margin-right: -($g-gutter / 2);
+  }
+} @else {
+  [class*=#{$g-row-prefix}] {
+    position: relative;
+    flex-flow: row wrap;
+    margin-left: -($g-gutter / 2);
+    margin-right: -($g-gutter / 2);
+  }
+}
+
+@each $size in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-row-prefix, #{$size}, $g-empty) {
+    @include screen-size($size) {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+    }
+  }
+}
+
+/*================ Grid Row Padding Classes ================*/
+
+@if ($g-prefix) {
+  @include prefix-suffix-constructor($g-no-padding, '', $g-empty) {
+    > [class*=#{$g-prefix-type}-#{$g-item-prefix}] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+  [class*=#{$g-prefix-type}-#{$g-row-prefix}].#{$g-prefix-type}-#{$g-no-padding} {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  [class*=#{$g-prefix-type}-#{$g-item-prefix}].#{$g-prefix-type}-#{$g-no-padding} {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  [class*=#{$g-prefix-type}-#{$g-item-prefix}].#{$g-prefix-type}-#{$g-add-padding} {
+    padding-left: ($g-gutter / 2);
+    padding-right: ($g-gutter / 2);
+  }
+  
+} @else {
+  
+  @include prefix-suffix-constructor($g-no-padding, '', $g-empty) {
+    > [class*=#{$g-item-prefix}] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+  [class*=#{$g-row-prefix}]#{$g-type}#{$g-no-padding} {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  [class*=#{$g-item-prefix}]#{$g-type}#{$g-no-padding} {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  [class*=#{$g-item-prefix}]#{$g-type}#{$g-add-padding} {
+    padding-left: ($g-gutter / 2);
+    padding-right: ($g-gutter / 2);
+  }
+}
+
+/*================ Grid Row Positioning Classes ================*/
+
+@each $size in $g-responsive-breakpoints {
+  @include screen-size($size) {
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -xy-center) {
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -x-fs) {
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -x-fe) {
+      -webkit-box-pack: end;
+      -ms-flex-pack: end;
+      justify-content: flex-end;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -x-center) {
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -x-sa) {
+      justify-content: space-around;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -x-sb) {
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -y-fs) {
+      -webkit-box-align: start;
+      -ms-flex-align: start;
+      align-items: flex-start;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -y-fe) {
+      -webkit-box-align: end;
+      -ms-flex-align: end;
+      align-items: flex-end;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -y-center) {
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -y-bl) {
+      -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+      align-items: baseline;
+    }
+    @include prefix-suffix-constructor($g-row-prefix, #{$size}, -y-st) {
+      -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+      align-items: stretch;
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Grid Items
+\*-------------------------------------*/
+
+@if ($g-prefix) {
+  [class*=#{$g-prefix-type}-#{$g-item-prefix}] {
+    position: relative;
+    min-height: 1px;
+    padding-right: ($g-gutter / 2);
+    padding-left: ($g-gutter / 2);
+    flex: 0 0 100%;
+  }
+} @else {
+  [class*=#{$g-item-prefix}] {
+    position: relative;
+    min-height: 1px;
+    padding-right: ($g-gutter / 2);
+    padding-left: ($g-gutter / 2);
+    flex: 0 0 100%;
+  }
+}
+
+@each $size in $g-responsive-breakpoints {
+  @include prefix-suffix-constructor($g-item-prefix, $size, $g-empty) {
+    @include screen-size($size) {
+      flex: 1;
+    }
+  }
+}
+
+@each $size in $g-responsive-breakpoints {
+  @include screen-size($size) {
+    @for $i from 1 through $g-columns {
+      @include prefix-suffix-constructor($g-item-prefix, $size, -#{$i}) {
+        flex: 0 0 percentage($i / $g-columns);
+      }
+    }
+  }
+}
+
+/*-------------------------------------*
+  #Grid Item Utility Classes
+\*-------------------------------------*/
+
+@each $size in $g-responsive-breakpoints {
+  @include screen-size($size) {
+    @include prefix-suffix-constructor($g-item-prefix, #{$size}, -fs) {
+      -ms-flex-item-align: start;
+      align-self: flex-start
+    }
+    @include prefix-suffix-constructor($g-item-prefix, #{$size}, -fe) {
+      -ms-flex-item-align: end;
+      align-self: flex-end;
+    }
+    @include prefix-suffix-constructor($g-item-prefix, #{$size}, -center) {
+      -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+    }
+    @include prefix-suffix-constructor($g-item-prefix, #{$size}, -bl) {
+      -ms-flex-item-align: baseline;
+      align-self: baseline;
+    }
+    @include prefix-suffix-constructor($g-item-prefix, #{$size}, -st) {
+      -ms-flex-item-align: stretch;
+      -ms-grid-row-align: stretch;
+      align-self: stretch;
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------*
+  #FLEX-GRID - END
+\*------------------------------------------------------------------------------*/
